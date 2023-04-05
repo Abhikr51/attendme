@@ -1,7 +1,7 @@
 import { SET_LOGIN, SET_LOGOUT, SET_PANEL, UPDATE_USER } from "../actions/AuthActions";
 
 const initState = {
-  loggedIn: false,
+  loggedIn: true,
   user: {},
   token : "",
   panel : "guest"

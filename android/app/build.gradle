@@ -95,6 +95,7 @@ android {
 
     namespace "com.itzabhi.attendme"
     defaultConfig {
+        missingDimensionStrategy 'react-native-camera', 'general'
         applicationId "com.itzabhi.attendme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

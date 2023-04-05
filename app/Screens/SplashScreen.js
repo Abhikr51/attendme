@@ -8,13 +8,11 @@ import AppColors from '../configs/AppColors';
 import LocalKeyStore from '../storage/AsyncStorage';
 import { getUser } from '../store/actions/AuthActions';
 import NetInfo from "@react-native-community/netinfo";
-import { loadLocation } from '../store/actions/LocationActions';
 const SplashScreen = ({navigation}) => {
   const dispatch = useDispatch()
   const nextScreen = async () => {
     var redirect = "App"
     var loginToken = null
-    dispatch(loadLocation())
     await LocalKeyStore.getKey('token', (err, token) => {
       if (token) {
         try {

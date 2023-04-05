@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Screen from '../components/Screen';
-import { View } from 'react-native';
+import { useColorScheme } from 'react-native';
 import AppColors from '../configs/AppColors';
 import SplashScreen from '../Screens/SplashScreen';
 import Login from '../Screens/Auth/Login';
@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoInternet from '../Screens/NoInternet';
 import ShowNotConnected from '../components/ShowNoConnection';
 import Register from '../Screens/Auth/Register';
+import Home from '../Screens/Home';
+import Profile from '../Screens/Profile';
+import About from '../Screens/About';
 
 
 
@@ -55,7 +58,10 @@ const App = ({ navigation }) => {
     return (<>
       <ShowNotConnected />
       <UserNavigator.Navigator screenOptions={{ headerShown: false }} >
-        <UserNavigator.Screen name='Home' component={()=><AppText></AppText>} />
+        <UserNavigator.Screen name='Home' component={Home} />
+        <UserNavigator.Screen name='Profile' component={Profile} />
+        <UserNavigator.Screen name='About' component={About} />
+
       </UserNavigator.Navigator>
     </>);
   }
@@ -69,8 +75,9 @@ const App = ({ navigation }) => {
 }
 
 const Navigation = () => {
+  const colorScheme = useColorScheme()
   return (
-    <NavigationContainer >
+    <NavigationContainer theme={colorScheme == 'dark' ? AppDarkTheme : AppLightTheme} >
       {/* <TestDrawer/> */}
       <Main />
     </NavigationContainer>

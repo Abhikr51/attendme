@@ -5,6 +5,7 @@ import splashEvents from "../../helpers/splashEvents"
 import { showToast } from "../../helpers/__globals_funcs"
 import Api from "../../helpers/Api"
 import DeviceInfo from 'react-native-device-info'
+import axios from "axios"
 
 
 
@@ -75,41 +76,34 @@ export const updateUser = (values) => {
 
     }
 }
-export const setLogin = (code, user_id) => {
+export const setLogin = (email , password , next =()=>{},nextError= ()=>{}) =>{
 
 
-    return async (dispatch) => {
-        // your code for login
-        console.log("userId is ", user_id);
-        await Api.post(baseURL + otpURL, {
-            code: code,
-            user_id: user_id
-        },
-            {
-                headers: {
-                    'device-id': DeviceInfo.getDeviceId(),
-                    'device-type': DeviceInfo.getDeviceType(),
+    return (dispatch)=>{
+        axios.post(baseURL+loginURL , {email,password}).then(({data})=>{
+            if(data.status){
+                if(data.data.role == 'student'){
+                    LocalKeyStore.setKey('token' , data.token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+                    dispatch({
+                        type: SET_LOGIN,
+                        user: data.data,
+                        token: data.token
+                    })
+                }else{
+                    throw new Error("Only students can access this APP !!")
                 }
+                next();
+            }else{
+                console.log(data);
+                throw new Error("Somthing went wrong")
             }
-        ).then(res => {
-            if (res.data.status) {
-                dispatch({
-                    type: SET_LOGIN,
-                    user: res.data.data.user,
-                    token: res.data.token
-                })
-                splashEvents(dispatch, res.data.token, res.data.data.user)
-                LocalKeyStore.setKey('token', res.data.token)
-                LocalKeyStore.setKey('authData', res.data.data.user)
-            } else {
-                showToast(res.data.message)
-                throw new Error(res.data.message);
-            }
-        }).catch(err => {
-            console.log("login Err", err);
-            throw new Error(err.message);
+        }).catch(err=>{
+            console.log("setLogin" , err);
+            nextError(err)
         })
 
+        
     }
 }
 
