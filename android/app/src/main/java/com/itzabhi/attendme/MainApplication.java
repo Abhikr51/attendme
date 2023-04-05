@@ -1,4 +1,4 @@
-package com.attscanner;
+package com.itzabhi.attendme;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

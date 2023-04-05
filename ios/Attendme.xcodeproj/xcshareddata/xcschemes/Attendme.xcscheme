@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "attscanner.app"
-               BlueprintName = "attscanner"
-               ReferencedContainer = "container:attscanner.xcodeproj">
+               BuildableName = "Attendme.app"
+               BlueprintName = "Attendme"
+               ReferencedContainer = "container:Attendme.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "attscannerTests.xctest"
-               BlueprintName = "attscannerTests"
-               ReferencedContainer = "container:attscanner.xcodeproj">
+               BuildableName = "AttendmeTests.xctest"
+               BlueprintName = "AttendmeTests"
+               ReferencedContainer = "container:Attendme.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "attscanner.app"
-            BlueprintName = "attscanner"
-            ReferencedContainer = "container:attscanner.xcodeproj">
+            BuildableName = "Attendme.app"
+            BlueprintName = "Attendme"
+            ReferencedContainer = "container:Attendme.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "attscanner.app"
-            BlueprintName = "attscanner"
-            ReferencedContainer = "container:attscanner.xcodeproj">
+            BuildableName = "Attendme.app"
+            BlueprintName = "Attendme"
+            ReferencedContainer = "container:Attendme.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

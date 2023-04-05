@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.attscanner"
+    namespace "com.itzabhi.attendme"
     defaultConfig {
-        applicationId "com.attscanner"
+        applicationId "com.itzabhi.attendme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
