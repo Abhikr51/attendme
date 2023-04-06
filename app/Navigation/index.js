@@ -54,7 +54,6 @@ const App = ({ navigation }) => {
   const auth = useSelector(s => s.auth)
   
   if (auth.loggedIn) {
-    
     return (<>
       <ShowNotConnected />
       <UserNavigator.Navigator screenOptions={{ headerShown: false }} >

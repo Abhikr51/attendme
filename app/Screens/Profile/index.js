@@ -5,47 +5,43 @@ import AppHeader from '../../components/AppHeader'
 import { Avatar, Divider, List, ListItem, Text } from '@ui-kitten/components'
 import AppLayout from '../../components/AppLayout'
 import Spacer from '../../components/Spacer'
+import { useSelector } from 'react-redux'
 
 const Profile = () => {
+  const user = useSelector(s=>s.auth.user)
   const personalDetails = [
     {
       title: "Phone",
-      value: "1234567890"
+      value: user.details.phone
     },
     {
       title: "Birth day",
-      value: "8th May 2000"
+      value: user.details.dob
     },
     {
       title: "Gaurdian name",
-      value: "Mr. Parent "
+      value: user.details.guardian_name
     },
     {
       title: "Gender",
-      value: "Male"
+      value: user.details.gender
     },
     {
       title: "Address",
-      value: "Garikhana Barakar road , Purulia , 723101, W.B"
+      value: user.details.address
     },
   ]
   const educationDetails = [
     {
       title: "Semester",
-      value: "Semester I"
+      value: "Semester "+user.details.semester_code
     },
     {
       title: "Course",
-      value: "Masters of Computer Aplication"
+      value: user.details.stream_code
     },
 
   ]
-  const renderItem = ({ item, index }) => (
-    <ListItem
-      title={item.title}
-      description={item.value}
-    />
-  );
   return (
     <Screen>
       <AppHeader>Profile</AppHeader>
@@ -58,8 +54,8 @@ const Profile = () => {
               source={require('../../assets/images/student.png')}
             />
             <View style={{ flex: 1, paddingLeft: 20 }}>
-              <Text category='h5' >Abhijit Kumar</Text>
-              <Text appearance='hint' >abhijit.kumar.dev@gmail.com</Text>
+              <Text category='h5' >{user.details.name}</Text>
+              <Text appearance='hint' >{user.email}</Text>
             </View>
           </View>
         </AppLayout>

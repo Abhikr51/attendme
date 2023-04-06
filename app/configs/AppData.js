@@ -1,5 +1,5 @@
 // const base = "http://13.231.246.144:8001"
-const base = "http://localhost:8001"
+const base = "http://192.168.29.237:8000"
 export const hostURL  = base;
 export const baseURL = base + "/api/v1"
 
@@ -11,20 +11,10 @@ var auth = ""
 
 //user
 export const loginURL = '/login'
-export const registerURL = '/register'
-export const user_updateURL = '/user/update'
-export const otpURL = '/2fa'
+export const registerURL = "/student/create"
+export const user_updateURL = '/student/update'
 export const logoutURL = auth +'/logout'
-export const getUserURL = auth +'/authuser'
-export const categoriesURL = "/guest/category/all"
-export const treandingCategoriesURL = '/guest/category/trending'
-export const couponTypes = '/coupontype'
+export const getUserURL = auth +'/get-user'
+export const semester_listURL = '/semester/list'
+export const stream_listURL = '/stream/list'
 
-
-
-
-//vendor apis
-export const merchant_storesURL = "/vendor/store"
-export const merchant_store_create = "/vendor/store/create"
-export const merchant_storeTypesURL = '/vendor/store/storetype'
-export const merchant_create = "/vendor/create"

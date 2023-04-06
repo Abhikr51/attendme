@@ -14,8 +14,8 @@ const About = () => {
       <ScrollView contentContainerStyle={{padding : 10}}>
 
         <AppLayout style={{alignItems  :'center'}} > 
-            <View style={{width : 100, height : 100 , borderRadius : 50 }} >
-                <Image resizeMode='cover' source={require('../../assets/images/user_avatar.png')} style={{height : "100%" , width  :"100%"}} />
+            <View style={styles.avatar} >
+                <Image resizeMode='cover' source={require('../../assets/images/abhi.jpeg')} style={{height : "100%" , width  :"100%"}} />
             </View>
             <Spacer size={20} />
             <Text style={{fontSize : 25}}  >Abhijit Kumar</Text>
@@ -39,8 +39,8 @@ const About = () => {
         </AppLayout>
         <Spacer size={10} />
         <AppLayout style={{alignItems  :'center'}} > 
-            <View style={{width : 100, height : 100 , borderRadius : 50 }} >
-                <Image resizeMode='cover' source={require('../../assets/images/user_avatar.png')} style={{height : "100%" , width  :"100%"}} />
+            <View style={styles.avatar} >
+                <Image resizeMode='cover' source={require('../../assets/images/RM.jpeg')} style={{height : "100%" , width  :"100%"}} />
             </View>
             <Spacer size={20} />
             <Text style={{fontSize : 25}}  >Riman Mandal</Text>
@@ -78,5 +78,13 @@ const styles = StyleSheet.create({
         borderWidth : 1,
         padding : 10
     },
-    img:{height : "100%" , width  :"100%"}
+    img:{height : "100%" , width  :"100%"},
+    avatar : {
+        width : 140, 
+        height : 140 , 
+        borderRadius : 90 ,
+        overflow:'hidden' ,
+        borderColor : AppColors.lightGrey,
+        borderWidth  :10
+    }
 })

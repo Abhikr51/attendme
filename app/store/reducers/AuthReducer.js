@@ -1,10 +1,9 @@
 import { SET_LOGIN, SET_LOGOUT, SET_PANEL, UPDATE_USER } from "../actions/AuthActions";
 
 const initState = {
-  loggedIn: true,
+  loggedIn: false,
   user: {},
   token : "",
-  panel : "guest"
 }
 
 const AuthReducer = (state = initState, action) => {
@@ -15,12 +14,10 @@ const AuthReducer = (state = initState, action) => {
         loggedIn: true,
         user: action.user,
         token : action.token,
-        panel : "user"
       }
     case SET_PANEL:
       return {
         ...state,
-        panel : action.payload
       }
     case UPDATE_USER:
       return {

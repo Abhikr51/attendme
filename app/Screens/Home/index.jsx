@@ -5,6 +5,8 @@ import { Avatar, Icon, MenuItem, OverflowMenu, Spinner, Text, TopNavigation, Top
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import AppColors from '../../configs/AppColors';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLogout } from '../../store/actions/AuthActions';
 const InfoIcon = (props) => (
   <Icon {...props} name='info' />
 );
@@ -12,14 +14,14 @@ const MenuIcon = (props) => (
   <Icon {...props} name='more-vertical' />
 );
 
-const LogoutIcon = (props) => (
-  <Icon {...props} name='log-out' />
-);
 const Home = ({navigation}) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [scannedText, setScannedText] = useState("")
   const [flashEnabled, setFlashEnabled] = useState(false)
   const [completed, setCompleted] = useState(true)
+  const [spinner, setSpinner] = useState(false)
+  const auth = useSelector(s=>s.auth)
+  const dispatch = useDispatch()
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
@@ -27,6 +29,15 @@ const Home = ({navigation}) => {
     <TouchableOpacity onPress={() => setFlashEnabled(!flashEnabled)} style={styles.flashBtn} >
       <Icon {...props} name={flashEnabled ? 'flash-off' : 'flash'} color={AppColors.black} />
     </TouchableOpacity>
+  );
+  const on_logout = async()=>{
+    setSpinner(true); 
+    dispatch(setLogout(()=>{toggleMenu()},()=>{setSpinner(false)}))
+  }
+  const LogoutIcon = (props) => (
+    spinner ? <Spinner status='basic' size='small' style={{paddingLeft : 10}} /> 
+    :
+    <Icon {...props} name='log-out' />
   );
   const renderRightActions = () => (
     <React.Fragment>
@@ -36,7 +47,7 @@ const Home = ({navigation}) => {
         visible={menuVisible}
         onBackdropPress={toggleMenu}>
         <MenuItem onPress={()=>{ toggleMenu(); navigation.navigate('About')}} accessoryLeft={InfoIcon} title='About creator' />
-        <MenuItem accessoryLeft={LogoutIcon} title='Logout' />
+        <MenuItem onPress={on_logout} accessoryLeft={LogoutIcon} title='Logout' />
       </OverflowMenu>
     </React.Fragment>
   );
@@ -46,7 +57,12 @@ const Home = ({navigation}) => {
         style={styles.logo}
         source={require('../../assets/images/student.png')}
       />
-      <Text {...props}>Scan your attendance</Text>
+      {
+        Object.keys(auth.user).length !== 0 ?
+          <Text {...props}>Hey , {auth.user.details.first_name}</Text>
+        : 
+        <Spinner status='primary' />
+      }
     </TouchableOpacity>
   );
 
@@ -64,7 +80,7 @@ const Home = ({navigation}) => {
         title={renderTitle}
         accessoryRight={renderRightActions}
       />
-      <QRCodeScanner
+      {/* <QRCodeScanner
         onRead={onSuccess}
         flashMode={flashEnabled ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
 
@@ -93,7 +109,7 @@ const Home = ({navigation}) => {
         //   </TouchableOpacity>
         // }
         cameraStyle={styles.cameraContainer}
-      />
+      /> */}
     </Screen>
   )
 }

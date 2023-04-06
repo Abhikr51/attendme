@@ -1,5 +1,5 @@
 import { Alert, ToastAndroid } from "react-native"
-import { getUserURL, logoutURL, otpURL, baseURL, user_updateURL } from "../../configs/AppData"
+import { getUserURL, logoutURL, otpURL, baseURL, user_updateURL, loginURL, registerURL } from "../../configs/AppData"
 import LocalKeyStore from "../../storage/AsyncStorage"
 import splashEvents from "../../helpers/splashEvents"
 import { showToast } from "../../helpers/__globals_funcs"
@@ -76,34 +76,79 @@ export const updateUser = (values) => {
 
     }
 }
-export const setLogin = (email , password , next =()=>{},nextError= ()=>{}) =>{
+export const setLogin = (email, password, next = () => { }, nextError = () => { }) => {
 
 
-    return (dispatch)=>{
-        axios.post(baseURL+loginURL , {email,password}).then(({data})=>{
-            if(data.status){
-                if(data.data.role == 'student'){
-                    LocalKeyStore.setKey('token' , data.token);
+    return async (dispatch) => {
+        await Api.post(baseURL + loginURL, { email, password }).then(({ data }) => {
+            // console.log("setLogin" , data);
+            if (data.status) {
+                if (data.data.role == 'student') {
+                    LocalKeyStore.setKey('token', data.token);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+                    splashEvents(dispatch, data.token, data.data)
                     dispatch({
                         type: SET_LOGIN,
                         user: data.data,
                         token: data.token
                     })
-                }else{
+                } else {
                     throw new Error("Only students can access this APP !!")
                 }
                 next();
-            }else{
+            } else {
                 console.log(data);
-                throw new Error("Somthing went wrong")
+                throw new Error(data.msg)
             }
-        }).catch(err=>{
-            console.log("setLogin" , err);
-            nextError(err)
+        }).catch(err => {
+            console.log("setLogin", err);
+            nextError({ message: err.response ? err.response.data.msg : err.message })
         })
 
-        
+
+    }
+}
+export const registerUser = (values, next = () => { }, nextError = () => { }) => {
+
+
+    return async (dispatch) => {
+        let data = {
+            first_name : values.first_name,
+            middle_name : values.middle_name,
+            last_name : values.last_name,
+            dob : values.dob.toLocaleDateString().split('/').join('-'),
+            gender : values.gender,
+            email : values.email,
+            phone : values.phone,
+            father_name : values.father_name,
+            guardian_name : values.guardian_name,
+            course : values.course,
+            semester : values.semester,
+            category : values.category,
+            address : values.address,
+            password : values.password,
+        }
+        await Api.post(baseURL + registerURL, data).then(({ data }) => {
+            if (data.status) {
+                LocalKeyStore.setKey('token', data.token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+                splashEvents(dispatch, data.token, data.data)
+                dispatch({
+                    type: SET_LOGIN,
+                    user: data.data,
+                    token: data.token
+                })
+                next();
+            } else {
+                // console.log(data);
+                throw new Error(data.msg)
+            }
+        }).catch(err => {
+            console.log("setLogin", err);
+            nextError({ message: err.response ? err.response.data.msg : err.message })
+        })
+
+
     }
 }
 
@@ -159,7 +204,7 @@ export const getUser = (token) => {
     }
 }
 
-export const setLogout = () => {
+export const setLogout = (onNext = () => { }, onErr = () => { }) => {
 
 
     return async (dispatch, getState) => {
@@ -172,30 +217,38 @@ export const setLogout = () => {
             [
                 {
                     text: "Cancel",
-                    onPress: () => { console.log('Cancelled') },
+                    onPress: () => { console.log('Cancelled'); onErr(); },
                     style: "cancel"
                 },
                 {
                     text: "OK", onPress: async () => {
                         // console.log("Token for logout",Api.defaults.token)
-                        await Api.post(baseURL + logoutURL).then(res => {
-                            // console.log("Logout",res);
-                            if (res.data.status) {
-                                dispatch({
-                                    type: SET_LOGOUT,
-                                })
-                                LocalKeyStore.removeKey('token')
-                                LocalKeyStore.removeKey('authData')
-                            }
-                            ToastAndroid.showWithGravity(
-                                res.data.message,
-                                ToastAndroid.SHORT,
-                                ToastAndroid.CENTER
-                            );
-                        }).catch(err => {
+                        // await Api.post(baseURL + logoutURL).then(res => {
+                        //     // console.log("Logout",res);
+                        //     if (res.data.status) {
+                        try {
+                            onNext()
+                            dispatch({
+                                type: SET_LOGOUT,
+                            })
+                            LocalKeyStore.removeKey('token')
+                            LocalKeyStore.removeKey('authData')
+                        } catch (err) {
+                            onErr();
                             console.log(err);
-                            throw new Error(err.message);
-                        })
+                            showToast(err.message);
+                        }
+                        // }
+                        // ToastAndroid.showWithGravity(
+                        //     res.data.message,
+                        //     ToastAndroid.SHORT,
+                        //     ToastAndroid.CENTER
+                        // );
+                        // }).catch(err => {
+                        //     onErr();
+                        //     console.log(err);
+                        //     showToast(err.message);
+                        // })
                     }
                 }
             ]

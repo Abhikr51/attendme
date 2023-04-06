@@ -13,6 +13,7 @@ class Api{
         let responseObject = {
             data : {}
         }
+        console.log("URL :", url);
         await fetch(url,{
             method : 'get',
             headers : {
@@ -38,6 +39,7 @@ class Api{
         let responseObject = {
             data : {}
         }
+        console.log("URL :", url , data);
         await fetch(url,{
             method : 'post',
             headers : {
