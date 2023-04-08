@@ -1,13 +1,15 @@
 import { StatusBar, StyleSheet, View, Pressable, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Screen from '../../components/Screen'
-import { Avatar, Icon, MenuItem, OverflowMenu, Spinner, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { Avatar, Button, Icon, MenuItem, OverflowMenu, Spinner, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import AppColors from '../../configs/AppColors';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLogout } from '../../store/actions/AuthActions';
 import { socket } from '../../configs/socket';
+import { showToast } from '../../helpers/__globals_funcs';
+import Spacer from '../../components/Spacer';
 const InfoIcon = (props) => (
   <Icon {...props} name='info' />
 );
@@ -19,10 +21,14 @@ const Home = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [scannedText, setScannedText] = useState("")
   const [flashEnabled, setFlashEnabled] = useState(false)
-  const [completed, setCompleted] = useState(true)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(true)
   const [spinner, setSpinner] = useState(false)
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [qrText, setQrText] = useState("");
+  const [scanned, setScanned] = useState()
+  let timeout;
+  const qrRef = useRef(null)
   const auth = useSelector(s => s.auth)
   const dispatch = useDispatch()
   const toggleMenu = () => {
@@ -69,7 +75,7 @@ const Home = ({ navigation }) => {
     </TouchableOpacity>
   );
   function onConnect() {
-    socket.connect();
+   socket.connect();
     setIsConnected(true);
   }
 
@@ -77,32 +83,61 @@ const Home = ({ navigation }) => {
     socket.disconnect();
     setIsConnected(false);
   }
+
   const onSuccess = e => {
     // Linking.openURL(e.data).catch(err =>
     //   console.error('An error occured', err)
     // );
     setScannedText(e.data)
-    console.log(e.data);
+    // console.log(e.data);
+    let splitted = e.data.split('$')
+    let client_data = {
+      qr_text: splitted[0],
+      qr_id: splitted[1],
+      a_id: splitted[2],
+      user_id: auth.user._id,
+    }
+    console.log(client_data);
+    socket.emit('app:makeAttendance', client_data)
   };
-  const showRecorded = () => {
-    setCompleted(true)
+  // const showSuccess = () => {
+  //   setSuccess(true)
+  //   return setTimeout(() => {
+  //     setSuccess(false)
+  //   }, 3000)
+  // }
+  const showError = () => {
+    setError(true)
     return setTimeout(() => {
-      setCompleted(false)
+      setError(false)
     }, 3000)
   }
   useEffect(() => {
     onConnect()
     // socket.emit('test',{message : "Hello from"})
-    socket.on('getQrText',(qrText)=>{
-        console.log(qrText);
-        setQrText(qrText)
+    socket.on('app:sendSuccess', (res) => {
+      setSuccess(true)
+      setScanned(true);
+      console.log("test");
+      showToast(res)
     })
-    const tout = showRecorded()
+    socket.on('app:sendErr', (res) => {
+      setSuccess(false)
+      setScanned(true);
+      console.log("test");
+      showToast(res.msg)
+    })
     return () => {
-        onDisconnect()
-        clearTimeout(tout)
-      };
-}, [])
+      onDisconnect()
+      clearTimeout(timeout)
+    };
+  }, [])
+  const scan_again = () => {
+    setScanned(false)
+    setTimeout(() => {
+      qrRef.current.reactivate()
+    }, 500)
+  }
   return (
     <Screen >
       <TopNavigation
@@ -110,36 +145,53 @@ const Home = ({ navigation }) => {
         title={renderTitle}
         accessoryRight={renderRightActions}
       />
-      <QRCodeScanner
-        onRead={onSuccess}
-        flashMode={flashEnabled ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
+      <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }} >
 
-        topContent={
-          <Pressable disabled={!scannedText} onPress={() => {
-            // Linking.openURL(scannedText).catch(err=>console.error(err))
-          }}  >
-            <Text category='h4' style={styles.centerText}>
-              {completed ? "Attendance Recorded" : "Searching for QR code ..."}
-            </Text>
-            <Text style={styles.textBold}> {
-              completed ?
+        {
+          scanned ?
+            <>
+              <Text category='h4' status={success ? 'success' : 'danger'} style={styles.centerText}>
+                {success ? "Attendance Recorded" : "Could not record attendance"}
+              </Text>
+              <Text style={styles.textBold}>
                 <Icon
                   style={{ width: 40, height: 40 }}
-                  fill={AppColors.success}
-                  name='checkmark-circle-2'
-                /> :
-                <Spinner />
-            }
-            </Text>
-          </Pressable>
+                  fill={success ? AppColors.success : AppColors.danger}
+                  name={success ? 'checkmark-circle-2' : "close-circle-outline"}
+                />
+              </Text>
+              <Spacer size={20} />
+              <Button onPress={scan_again} status={success ? 'success' : 'danger'} appearance='outline' >Scan Again</Button>
+            </>
+            :
+            <>
+
+              <QRCodeScanner
+                onRead={onSuccess}
+                flashMode={flashEnabled ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
+                ref={qrRef}
+                topContent={
+                  <Pressable disabled={!scannedText} onPress={() => {
+                    // Linking.openURL(scannedText).catch(err=>console.error(err))
+                  }}  >
+                    <View style={{alignItems : 'center'}} >
+                      <Text category='h4' style={styles.centerText}>
+                        Searching for QR code ...
+                      </Text>
+                        <Spinner />
+                    </View>
+                  </Pressable>
+                }
+                bottomContent={
+                  <TouchableOpacity onPress={() => { }} style={styles.buttonTouchable}>
+                    <Text status={isConnected ? 'success' : 'danger'}> {isConnected ? "Connected" : "Disconnected"} </Text>
+                  </TouchableOpacity>
+                }
+                cameraStyle={styles.cameraContainer}
+              />
+            </>
         }
-        bottomContent={
-          <TouchableOpacity onPress={()=>{}} style={styles.buttonTouchable}>
-            <Text status={isConnected ? 'success' : 'danger'}> {isConnected ? "Connected" : "Disconnected"} </Text>
-          </TouchableOpacity>
-        }
-        cameraStyle={styles.cameraContainer}
-      />
+      </View>
     </Screen>
   )
 }
@@ -160,7 +212,8 @@ const styles = StyleSheet.create({
   centerText: {
     // flex: 1,
     fontSize: 18,
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: 20
   },
   flashBtn: {
     // position : 'absolute',
