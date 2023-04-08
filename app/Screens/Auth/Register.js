@@ -211,6 +211,7 @@ const Register = ({navigation}) => {
                   onBlur={() => setFieldTouched('email')}
                   status={errors.email && touched.email ? 'danger' : 'basic'}
                   placeholder='eg : mymail@mail.com'
+                  keyboardType='email-address'
                 />
                 <ErrorMessage error={errors.email} touched={touched.email} />
                 <Text category='label' status={errors.phone && touched.phone ? 'danger' : 'basic'} style={{ marginVertical: 10 }} >Phone <Required /> </Text>
@@ -220,6 +221,7 @@ const Register = ({navigation}) => {
                   onBlur={() => setFieldTouched('phone')}
                   status={errors.phone && touched.phone ? 'danger' : 'basic'}
                   placeholder='eg : 1234567890'
+                  keyboardType='number-pad'
                 />
                 <ErrorMessage error={errors.phone} touched={touched.phone} />
                 <Text category='label' status={errors.address && touched.address ? 'danger' : 'basic'} style={{ marginVertical: 10 }} >Address <Required /> </Text>

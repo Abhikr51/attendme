@@ -90,6 +90,10 @@ const Login = ({ navigation }) => {
                     value={email}
                     onChangeText={(text) => setEmail(text)}
                     placeholder='eg : mymail@mail.com'
+                    keyboardType='email-address'
+                    textContentType='emailAddress'
+                    autoCapitalize='none'
+                    autoComplete='email'
                     status={(emailErr ? 'danger' : 'basic')}
                 />
                 <Text category='label' style={{ marginVertical: 10 }} >Password</Text>
