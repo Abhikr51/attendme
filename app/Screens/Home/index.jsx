@@ -95,7 +95,7 @@ const Home = ({ navigation }) => {
       qr_text: splitted[0],
       qr_id: splitted[1],
       a_id: splitted[2],
-      user_id: auth.user._id,
+      user_id: auth.user.details._id,
     }
     console.log(client_data);
     socket.emit('app:makeAttendance', client_data)
