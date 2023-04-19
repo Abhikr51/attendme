@@ -1,6 +1,6 @@
 // const base = "http://13.231.246.144:8001"
-// const base = "http://192.168.29.237"
-const base = "http://192.168.29.39"
+const base = "http://192.168.29.237"
+// const base = "http://192.168.29.39"
 // const base = "http://localhost:8000"
 export const hostURL  =  `${base}:8000`;
 export const socketURL  = `${base}:8080`;
