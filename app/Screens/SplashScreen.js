@@ -8,7 +8,9 @@ import AppColors from '../configs/AppColors';
 import LocalKeyStore from '../storage/AsyncStorage';
 import { getUser } from '../store/actions/AuthActions';
 import NetInfo from "@react-native-community/netinfo";
-import RNSplashScreen from "react-native-splash-screen"; //import SplashScreen
+// import RNSplashScreen from "react-native-splash-screen"; //import SplashScreen
+import { NetworkInfo } from "react-native-network-info";
+import { loadConfig } from '../store/actions/ConfigAction';
 const SplashScreen = ({navigation}) => {
   const dispatch = useDispatch()
   const nextScreen = async () => {
@@ -30,6 +32,7 @@ const SplashScreen = ({navigation}) => {
         //   redirect = re
         //   console.log("re",re);
         // })
+        await dispatch(loadConfig())
         await dispatch(getUser(loginToken))
       }catch(err){
         console.log(err);
@@ -48,20 +51,29 @@ const SplashScreen = ({navigation}) => {
     return conn
   }
   useEffect(()=>{
+    NetworkInfo.getGatewayIPAddress().then(defaultGateway => {
+      console.log(defaultGateway);
+    });
     fetchInternet().then(isConnected=>{
       if (isConnected) {
         nextScreen().then((redirect) => {
-          RNSplashScreen.hide()
+          // RNSplashScreen.hide()
           navigation.dispatch(
             StackActions.replace(redirect)
           );
         })
       }else{
-        RNSplashScreen.hide()
+        // RNSplashScreen.hide()
         navigation.dispatch(
           StackActions.replace('NoInternet')
         );
       }
+    }).catch((err)=>{
+      console.log("Net Fetch Err",err);
+      navigation.dispatch(
+        StackActions.replace(redirect)
+      );
+      // RNSplashScreen.hide()
     })
     // const splashTimeout = setTimeout(()=>{
     // },2000)

@@ -14,7 +14,7 @@ import AppPicker from '../../components/AppPicker'
 import { baseURL, semester_listURL, stream_listURL } from '../../configs/AppData'
 import Api from '../../helpers/Api'
 import LoadingIndicator from '../../components/LoadingIndicator'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { registerUser } from '../../store/actions/AuthActions'
 import { showToast } from '../../helpers/__globals_funcs'
 const validationRules = Yup.object().shape({
@@ -45,6 +45,7 @@ const Register = ({navigation}) => {
   ]
   const [semesterList, setSemesterList] = useState([])
   const [streamList, setStreamList] = useState([])
+  const config = useSelector(s=>s.config)
   const renderIcon = (props) => (
     <TouchableWithoutFeedback onPress={() => { setSecureTextEntry(!secureTextEntry); console.log(props) }}>
 

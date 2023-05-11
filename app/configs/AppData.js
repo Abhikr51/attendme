@@ -1,5 +1,7 @@
 // const base = "http://13.231.246.144:8001"
-const base = "http://192.168.29.237"
+// const base = "http://192.168.29.237"
+// const base = "http://192.168.142.48" //RM 9+
+const base = "http://192.168.0.185" //Mess
 // const base = "http://localhost:8000"
 export const hostURL  =  `${base}:8000`;
 export const socketURL  = `${base}:8080`;

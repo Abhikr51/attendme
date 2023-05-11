@@ -1,7 +1,7 @@
-import { StatusBar, StyleSheet, View, Pressable, TouchableOpacity } from 'react-native'
+import { StatusBar, StyleSheet, View, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import Screen from '../../components/Screen'
-import { Avatar, Button, Icon, MenuItem, OverflowMenu, Spinner, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { Avatar, Button, Icon, MenuItem, OverflowMenu, Spinner, Text, TopNavigation, TopNavigationAction, useTheme } from '@ui-kitten/components';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import AppColors from '../../configs/AppColors';
@@ -19,18 +19,21 @@ const MenuIcon = (props) => (
 
 const Home = ({ navigation }) => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const [scannedText, setScannedText] = useState("")
+  const [scannedResponseText, setScannedResponseText] = useState("")
   const [flashEnabled, setFlashEnabled] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(true)
   const [spinner, setSpinner] = useState(false)
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [qrText, setQrText] = useState("");
-  const [scanned, setScanned] = useState()
+  const [scannedResponse, setScannedResponse] = useState()
+  const [attendSpinner, setAttendSpinner] = useState(false)
+  const [message, setMessage] = useState("")
   let timeout;
   const qrRef = useRef(null)
   const auth = useSelector(s => s.auth)
   const dispatch = useDispatch()
+  const theme = useTheme();
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
@@ -75,7 +78,7 @@ const Home = ({ navigation }) => {
     </TouchableOpacity>
   );
   function onConnect() {
-   socket.connect();
+    socket.connect();
     setIsConnected(true);
   }
 
@@ -88,7 +91,8 @@ const Home = ({ navigation }) => {
     // Linking.openURL(e.data).catch(err =>
     //   console.error('An error occured', err)
     // );
-    setScannedText(e.data)
+    setAttendSpinner(true)
+    setScannedResponseText(e.data)
     // console.log(e.data);
     let splitted = e.data.split('$')
     let client_data = {
@@ -117,15 +121,15 @@ const Home = ({ navigation }) => {
     // socket.emit('test',{message : "Hello from"})
     socket.on('app:sendSuccess', (res) => {
       setSuccess(true)
-      setScanned(true);
-      console.log("test");
-      showToast(res)
+      setScannedResponse(true);
+      showToast("Success")
+      setMessage(res)
     })
     socket.on('app:sendErr', (res) => {
       setSuccess(false)
-      setScanned(true);
-      console.log("test");
-      showToast(res.msg)
+      setScannedResponse(true);
+      showToast("Failed")
+      setMessage(res.msg)
     })
     return () => {
       onDisconnect()
@@ -133,7 +137,8 @@ const Home = ({ navigation }) => {
     };
   }, [])
   const scan_again = () => {
-    setScanned(false)
+    setAttendSpinner(false)
+    setScannedResponse(false)
     setTimeout(() => {
       qrRef.current.reactivate()
     }, 500)
@@ -148,10 +153,11 @@ const Home = ({ navigation }) => {
       <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }} >
 
         {
-          scanned ?
+          scannedResponse ?
             <>
               <Text category='h4' status={success ? 'success' : 'danger'} style={styles.centerText}>
-                {success ? "Attendance Recorded" : "Could not record attendance"}
+                {/* {success ? "Attendance Recorded" : "Could not record attendance"} */}
+                {message}
               </Text>
               <Text style={styles.textBold}>
                 <Icon
@@ -164,32 +170,36 @@ const Home = ({ navigation }) => {
               <Button onPress={scan_again} status={success ? 'success' : 'danger'} appearance='outline' >Scan Again</Button>
             </>
             :
-            <>
-
-              <QRCodeScanner
-                onRead={onSuccess}
-                flashMode={flashEnabled ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
-                ref={qrRef}
-                topContent={
-                  <Pressable disabled={!scannedText} onPress={() => {
-                    // Linking.openURL(scannedText).catch(err=>console.error(err))
-                  }}  >
-                    <View style={{alignItems : 'center'}} >
-                      <Text category='h4' style={styles.centerText}>
-                        Searching for QR code ...
-                      </Text>
+            (
+              (attendSpinner) ?
+                <>
+                <ActivityIndicator animating size={200} color={theme['color-primary-500']}  />
+                </>
+                :
+                <QRCodeScanner
+                  onRead={onSuccess}
+                  flashMode={flashEnabled ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
+                  ref={qrRef}
+                  topContent={
+                    <Pressable disabled={!scannedResponseText} onPress={() => {
+                      // Linking.openURL(scannedResponseText).catch(err=>console.error(err))
+                    }}  >
+                      <View style={{ alignItems: 'center' }} >
+                        <Text category='h4' style={styles.centerText}>
+                          Searching for QR code ...
+                        </Text>
                         <Spinner />
-                    </View>
-                  </Pressable>
-                }
-                bottomContent={
-                  <TouchableOpacity onPress={() => { }} style={styles.buttonTouchable}>
-                    <Text status={isConnected ? 'success' : 'danger'}> {isConnected ? "Connected" : "Disconnected"} </Text>
-                  </TouchableOpacity>
-                }
-                cameraStyle={styles.cameraContainer}
-              />
-            </>
+                      </View>
+                    </Pressable>
+                  }
+                  bottomContent={
+                    <TouchableOpacity onPress={() => { }} style={styles.buttonTouchable}>
+                      <Text status={isConnected ? 'success' : 'danger'}> {isConnected ? "Connected" : "Disconnected"} </Text>
+                    </TouchableOpacity>
+                  }
+                  cameraStyle={styles.cameraContainer}
+                />
+            )
         }
       </View>
     </Screen>

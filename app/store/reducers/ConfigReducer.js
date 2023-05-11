@@ -4,7 +4,9 @@ import { SET_CONFIG } from "../actions/ConfigAction";
 const initConfig = {
     token : '',
     storeID : null,
-    isRegistered : false
+    isRegistered : false,
+    socketURL  : "",
+    baseURL : "",
 }
 const ConfigReducer = (state =initConfig, action) => {
     var tempConfig = {}

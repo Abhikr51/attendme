@@ -16,7 +16,8 @@ export const SET_LOGIN = "SET_LOGIN"
 export const SET_LOGOUT = "SET_LOGOUT"
 
 export const setAuthPanel = (p) => {
-    return (dispatch) => {
+    return (dispatch,getState) => {
+        const config = getState().config
         dispatch({
             type: SET_PANEL,
             payload: p
@@ -24,7 +25,8 @@ export const setAuthPanel = (p) => {
     }
 }
 export const updateUser = (values) => {
-    return async (dispatch) => {
+    return async (dispatch,getState) => {
+        const config = getState().config
         var FData = new FormData();
         if (values.image) {
             FData.append('image', {
@@ -79,7 +81,8 @@ export const updateUser = (values) => {
 export const setLogin = (email, password, next = () => { }, nextError = () => { }) => {
 
 
-    return async (dispatch) => {
+    return async (dispatch,getState) => {
+        const config = getState().config
         await Api.post(baseURL + loginURL, { email, password }).then(({ data }) => {
             // console.log("setLogin" , data);
             if (data.status) {
@@ -111,7 +114,8 @@ export const setLogin = (email, password, next = () => { }, nextError = () => { 
 export const registerUser = (values, next = () => { }, nextError = () => { }) => {
 
 
-    return async (dispatch) => {
+    return async (dispatch,getState) => {
+        const config = getState().config
         let data = {
             first_name : values.first_name,
             middle_name : values.middle_name,
@@ -155,7 +159,8 @@ export const registerUser = (values, next = () => { }, nextError = () => { }) =>
 export const getUser = (token) => {
 
 
-    return async (dispatch) => {
+    return async (dispatch,getState) => {
+        const config = getState().config
         //your code for get User
         Api.defaults["token"] = token
         await Api.get(baseURL + getUserURL, {
